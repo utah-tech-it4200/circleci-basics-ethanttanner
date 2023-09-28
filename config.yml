@@ -1,0 +1,43 @@
+version: 2.1
+jobs:
+  build:
+    docker:
+      - image: circleci/node:14 #ubuntu:latest 
+    steps:
+      - checkout
+      - run:
+          name: Print Hello, world
+          command: echo "Hello, world"
+      - run:
+          name: List all files in the current directory
+          command: ls -la
+      - run:
+          name: Create example.txt and write text to it
+          command: echo "This is an example text file." > example.txt
+      - run:
+          name: Cat the newly created file
+          command: cat example.txt
+      - run:
+          name: Install Zip and Unzip
+          command: |
+            apt-get update
+            apt-get install -y zip unzip
+      - run:
+          name: Create Zip archive (artifact.zip)
+          command: zip artifact.zip example.txt
+      - persist_to_workspace:
+          root: . 
+          paths:
+            - artifact.zip
+      - run:
+          name: Unzip and list components in the archive
+          command: unzip -l artifact.zip
+      - run:
+          name: Clean up created files
+          command: rm example.txt artifact.zip
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build
+
